@@ -205,9 +205,6 @@ class RNN(nn.Module):
             logits[i] = self.out_layer(input_)
         print(logits.argmax(dim=2))
 
-
-
-
         return logits.argmax(dim=2)
 
 
@@ -370,12 +367,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
                 input_ = self.dropout(hiddenTmp[layer])
             hidden = hiddenTmp
 
-
-
-
             logits[timestep] = self.out_layer(input_)
-
-
 
         return logits, hidden
 
@@ -423,17 +415,6 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
                 input_ = self.dropout(hidden[layer])
             logits[i] = self.out_layer(input_)
         return logits.argmax(dim=2)
-
-
-
-
-
-
-
-
-
-
-
 
 # Problem 2
 ##############################################################################
@@ -491,8 +472,6 @@ and a linear layer followed by a softmax.
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
-
-
 
 #----------------------------------------------------------------------------------
 
@@ -561,7 +540,6 @@ class MultiHeadedAttention(nn.Module):
 
         return output, norm_scores
 
-
     def forward(self, query, key, value, mask=None):
         # Implement the masked multi-head attention.
         # query, key, and value correspond to Q, K, and V in the latex, and
@@ -584,14 +562,7 @@ class MultiHeadedAttention(nn.Module):
         result = result.transpose(1,2).contiguous().view(query.size(0),-1,self.n_heads*self.d_k)
         result = self.linears[-1](result)
 
-
         return result# size: (batch_size, seq_len, self.n_units)
-
-
-
-
-
-
 
 #----------------------------------------------------------------------------------
 # The encodings of elements of the input sequence
@@ -605,7 +576,6 @@ class WordEmbedding(nn.Module):
     def forward(self, x):
         #print (x)
         return self.lut(x) * math.sqrt(self.n_units)
-
 
 class PositionalEncoding(nn.Module):
     def __init__(self, n_units, dropout, max_len=5000):
@@ -627,11 +597,8 @@ class PositionalEncoding(nn.Module):
                          requires_grad=False)
         return self.dropout(x)
 
-
-
 #----------------------------------------------------------------------------------
 # The TransformerBlock and the full Transformer
-
 
 class TransformerBlock(nn.Module):
     def __init__(self, size, self_attn, feed_forward, dropout):
@@ -644,7 +611,6 @@ class TransformerBlock(nn.Module):
     def forward(self, x, mask):
         x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, mask)) # apply the self-attention
         return self.sublayer[1](x, self.feed_forward) # apply the position-wise MLP
-
 
 class TransformerStack(nn.Module):
     """
@@ -659,7 +625,6 @@ class TransformerStack(nn.Module):
         for layer in self.layers:
             x = layer(x, mask)
         return self.norm(x)
-
 
 class FullTransformer(nn.Module):
     def __init__(self, transformer_stack, embedding, n_units, vocab_size):
@@ -693,7 +658,6 @@ def make_model(vocab_size, n_blocks=6,
             nn.init.xavier_uniform_(p)
     return model
 
-
 #----------------------------------------------------------------------------------
 # Data processing
 
@@ -717,7 +681,6 @@ class Batch:
             subsequent_mask(data.size(-1)).type_as(mask.data))
         return mask
 
-
 #----------------------------------------------------------------------------------
 # Some standard modules
 
@@ -734,7 +697,6 @@ class LayerNorm(nn.Module):
         std = x.std(-1, keepdim=True)
         return self.a_2 * (x - mean) / (std + self.eps) + self.b_2
 
-
 class ResidualSkipConnectionWithLayerNorm(nn.Module):
     """
     A residual connection followed by a layer norm.
@@ -748,7 +710,6 @@ class ResidualSkipConnectionWithLayerNorm(nn.Module):
     def forward(self, x, sublayer):
         "Apply residual connection to any sublayer with the same size."
         return x + self.dropout(sublayer(self.norm(x)))
-
 
 class MLP(nn.Module):
     """
